@@ -70,6 +70,19 @@ k8s=1.28
 build: ## Build EKS Optimized AL2 AMI
 	$(MAKE) k8s $(shell hack/latest-binaries.sh $(k8s) $(PROFILE_FLAG) $(BUCKET_FLAG) $(REGION_FLAG))
 
+# ensure that these flags are equivalent to the rules in the .editorconfig
+SHFMT_FLAGS := --list \
+--language-dialect auto \
+--indent 2 \
+--binary-next-line \
+--case-indent \
+--space-redirects
+
+SHFMT_COMMAND := $(shell which shfmt)
+ifeq (, $(SHFMT_COMMAND))
+	SHFMT_COMMAND = docker run --rm -v $(MAKEFILE_DIR):$(MAKEFILE_DIR) mvdan/shfmt
+endif
+
 .PHONY: fmt
 fmt: ## Format the source files
 	hack/shfmt --write
