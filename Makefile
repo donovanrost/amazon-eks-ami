@@ -39,12 +39,38 @@ else ifeq ($(aws_region), us-gov-west-1)
 	source_ami_owners ?= 045324592363
 endif
 
+<<<<<<< HEAD
+=======
+# The following _FLAG vars are to be passed into hack/latest-binaries.sh 
+ifdef aws_profile
+	PROFILE_FLAG := --profile $(aws_profile)
+endif
+
+ifdef binary_bucket_name
+	BUCKET_FLAG := --bucket $(binary_bucket_name)
+endif
+
+ifdef binary_bucket_region
+	REGION_FLAG := --region $(binary_bucket_region)
+endif
+
+T_RED := \e[0;31m
+T_GREEN := \e[0;32m
+T_YELLOW := \e[0;33m
+T_RESET := \e[0m
+
+>>>>>>> d08ced3 (Allow passing in profile, bucket region and bucket name into)
 # default to the latest supported Kubernetes version
 k8s=1.28
 
 .PHONY: build
+<<<<<<< HEAD
 build: ## Build EKS Optimized AMI, default using AL2, use os_distro=al2023 for AL2023 AMI
 	$(MAKE) k8s $(shell hack/latest-binaries.sh $(k8s))
+=======
+build: ## Build EKS Optimized AL2 AMI
+	$(MAKE) k8s $(shell hack/latest-binaries.sh $(k8s) $(PROFILE_FLAG) $(BUCKET_FLAG) $(REGION_FLAG))
+>>>>>>> d08ced3 (Allow passing in profile, bucket region and bucket name into)
 
 .PHONY: fmt
 fmt: ## Format the source files
@@ -98,6 +124,7 @@ k8s: validate ## Build default K8s version of EKS Optimized AMI
 # Use the `k8s` variable to specify a minor version instead
 
 .PHONY: 1.23
+<<<<<<< HEAD
 1.23: ## Build EKS Optimized AMI - K8s 1.23 - DEPRECATED: use the `k8s` variable instead
 	$(MAKE) k8s $(shell hack/latest-binaries.sh 1.23)
 
@@ -120,6 +147,30 @@ k8s: validate ## Build default K8s version of EKS Optimized AMI
 .PHONY: 1.28
 1.28: ## Build EKS Optimized AMI - K8s 1.28 - DEPRECATED: use the `k8s` variable instead
 	$(MAKE) k8s $(shell hack/latest-binaries.sh 1.28)
+=======
+1.23: ## Build EKS Optimized AL2 AMI - K8s 1.23
+	$(MAKE) k8s $(shell hack/latest-binaries.sh 1.23 $(PROFILE_FLAG) $(BUCKET_FLAG) $(REGION_FLAG))
+
+.PHONY: 1.24
+1.24: ## Build EKS Optimized AL2 AMI - K8s 1.24
+	$(MAKE) k8s $(shell hack/latest-binaries.sh 1.24 $(PROFILE_FLAG) $(BUCKET_FLAG) $(REGION_FLAG))
+
+.PHONY: 1.25
+1.25: ## Build EKS Optimized AL2 AMI - K8s 1.25
+	$(MAKE) k8s $(shell hack/latest-binaries.sh 1.25 $(PROFILE_FLAG) $(BUCKET_FLAG) $(REGION_FLAG))
+
+.PHONY: 1.26
+1.26: ## Build EKS Optimized AL2 AMI - K8s 1.26
+	$(MAKE) k8s $(shell hack/latest-binaries.sh 1.26 $(PROFILE_FLAG) $(BUCKET_FLAG) $(REGION_FLAG))
+
+.PHONY: 1.27
+1.27: ## Build EKS Optimized AL2 AMI - K8s 1.27
+	$(MAKE) k8s $(shell hack/latest-binaries.sh 1.27 $(PROFILE_FLAG) $(BUCKET_FLAG) $(REGION_FLAG)) 
+
+.PHONY: 1.28
+1.28: ## Build EKS Optimized AL2 AMI - K8s 1.28
+	$(MAKE) k8s $(shell hack/latest-binaries.sh 1.28 $(PROFILE_FLAG) $(BUCKET_FLAG) $(REGION_FLAG))
+>>>>>>> d08ced3 (Allow passing in profile, bucket region and bucket name into)
 
 .PHONY: lint-docs
 lint-docs: ## Lint the docs
