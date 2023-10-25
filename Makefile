@@ -73,7 +73,7 @@ ifdef binary_bucket_name
 endif
 
 ifdef binary_bucket_region
-	export BINARY_BUCKET_REGION=$(binary_bucket_region)
+	export AWS_REGION=$(binary_bucket_region)
 endif
 
 T_RED := \e[0;31m

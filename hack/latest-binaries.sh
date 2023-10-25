@@ -2,11 +2,12 @@
 
 set -o errexit
 set -o pipefail
-set -o nounset
+# set -o nounset
 
 
 BINARY_BUCKET_NAME=${BINARY_BUCKET_NAME:-"amazon-eks"}
 AWS_REGION=${AWS_REGION:-"us-west-1"}
+
 
 
 # POSITIONAL_ARGS=()
@@ -51,7 +52,7 @@ get_latest_binaries() {
   
   # retrieve the available "VERSION/BUILD_DATE" prefixes (e.g. "1.28.1/2023-09-14")
   # from the binary object keys, sorted in descending semver order, and pick the first one
-  LATEST_BINARIES=$(aws s3api list-objects-v2 ${profile} --region "${REGION}" --bucket "${BINARY_BUCKET_NAME}" --prefix "${MINOR_VERSION}" --query 'Contents[*].[Key]' --output text | cut -d'/' -f-2 | sort -Vru | head -n1)
+  LATEST_BINARIES=$(aws s3api list-objects-v2 ${profile} --region "${AWS_REGION}" --bucket "${BINARY_BUCKET_NAME}" --prefix "${MINOR_VERSION}" --query 'Contents[*].[Key]' --output text | cut -d'/' -f-2 | sort -Vru | head -n1)
 
   if [ "${LATEST_BINARIES}" == "None" ]; then
     echo >&2 "No binaries available for minor version: ${MINOR_VERSION}"
