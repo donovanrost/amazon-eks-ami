@@ -52,16 +52,28 @@ ifeq ($(aws_region), us-gov-west-1)
 endif
 
 # The following _FLAG vars are to be passed into hack/latest-binaries.sh 
+# ifdef aws_profile
+# 	PROFILE_FLAG := --profile $(aws_profile)
+# endif
+
+# ifdef binary_bucket_name
+# 	BUCKET_FLAG := --bucket $(binary_bucket_name)
+# endif
+
+# ifdef binary_bucket_region
+# 	REGION_FLAG := --region $(binary_bucket_region)
+# endif
+
 ifdef aws_profile
-	PROFILE_FLAG := --profile $(aws_profile)
+	export AWS_PROFILE=$(aws_profile)
 endif
 
 ifdef binary_bucket_name
-	BUCKET_FLAG := --bucket $(binary_bucket_name)
+	export BINARY_BUCKET_NAME=$(binary_bucket_name)
 endif
 
 ifdef binary_bucket_region
-	REGION_FLAG := --region $(binary_bucket_region)
+	export BINARY_BUCKET_REGION=$(binary_bucket_region)
 endif
 
 T_RED := \e[0;31m
@@ -74,7 +86,7 @@ k8s=1.28
 
 .PHONY: build
 build: ## Build EKS Optimized AL2 AMI
-	$(MAKE) k8s $(shell hack/latest-binaries.sh $(k8s) $(PROFILE_FLAG) $(BUCKET_FLAG) $(REGION_FLAG))
+	$(MAKE) k8s $(shell hack/latest-binaries.sh $(k8s))
 
 # ensure that these flags are equivalent to the rules in the .editorconfig
 SHFMT_FLAGS := --list \
@@ -152,7 +164,7 @@ k8s: validate ## Build default K8s version of EKS Optimized AL2 AMI
 
 .PHONY: 1.28
 1.28: ## Build EKS Optimized AL2 AMI - K8s 1.28
-	$(MAKE) k8s $(shell hack/latest-binaries.sh 1.28 $(PROFILE_FLAG) $(BUCKET_FLAG) $(REGION_FLAG))
+	$(MAKE) k8s $(shell hack/latest-binaries.sh 1.28)
 
 .PHONY: lint-docs
 lint-docs: ## Lint the docs
