@@ -88,7 +88,7 @@ k8s=1.28
 
 .PHONY: build
 build: ## Build EKS Optimized AL2 AMI
-	$(MAKE) k8s $(shell hack/latest-binaries.sh $(k8s))
+	$(MAKE) k8s $(shell "$(AWS_PROFILE) $(AWS_REGION) $(BINARY_BUCKET_NAME) hack/latest-binaries.sh $(k8s)")
 
 # ensure that these flags are equivalent to the rules in the .editorconfig
 SHFMT_FLAGS := --list \
