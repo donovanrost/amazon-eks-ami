@@ -67,7 +67,7 @@ endif
 
 
 ifdef aws_profile
-	AWS_PROFILE="export AWS_PROFILE=$(aws_profile);"
+	AWS_PROFILE="export AWS_PROFILE=$(aws_profile)"
 endif
 
 ifdef binary_bucket_name
