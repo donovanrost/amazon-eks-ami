@@ -67,15 +67,15 @@ endif
 
 
 ifdef aws_profile
-	AWS_PROFILE="AWS_PROFILE=central"
+	AWS_PROFILE:="AWS_PROFILE=central"
 endif
 
 ifdef binary_bucket_name
-	BINARY_BUCKET_NAME="BINARY_BUCKET_NAME=amazon-eks-binaries"
+	BINARY_BUCKET_NAME:="BINARY_BUCKET_NAME=amazon-eks-binaries"
 endif
 
 ifdef binary_bucket_region
-	AWS_REGION="AWS_REGION=us-gov-west-1"
+	AWS_REGION:="AWS_REGION=us-gov-west-1"
 endif
 
 T_RED := \e[0;31m
