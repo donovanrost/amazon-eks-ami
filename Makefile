@@ -67,7 +67,7 @@ endif
 
 
 ifdef aws_profile
-	AWS_PROFILE:="AWS_PROFILE=central"
+	AWS_PROFILE:="eval AWS_PROFILE=central"
 endif
 
 ifdef binary_bucket_name
