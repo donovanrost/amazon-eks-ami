@@ -166,7 +166,7 @@ k8s: validate ## Build default K8s version of EKS Optimized AL2 AMI
 
 .PHONY: 1.28
 1.28: ## Build EKS Optimized AL2 AMI - K8s 1.28
-	$(shell echo $$SHELL)
+	$(shell echo $(SHELL))
 
 
 .PHONY: lint-docs
