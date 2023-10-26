@@ -72,7 +72,7 @@ ifdef binary_bucket_name
 endif
 
 ifdef binary_bucket_region
-	AWS_REGION:="AWS_REGION=us-gov-west-1"
+	AWS_REGION:="export AWS_REGION=us-gov-west-1"
 endif
 
 T_RED := \e[0;31m
