@@ -8,10 +8,11 @@ set -o pipefail
 BINARY_BUCKET_NAME=${BINARY_BUCKET_NAME:-"amazon-eks"}
 AWS_REGION=${AWS_REGION:-"us-west-1"}
 
-echo "using:"
-echo "\tBINARY_BUCKET_NAME: ${BINARY_BUCKET_NAME}"
-echo "\tAWS_REGION: ${AWS_REGION}"
-echo "\tAWS_PROFILE: ${AWS_PROFILE}"
+echo "using:\n"
+echo "    SHELL: $(echo $SHELL)\n"
+echo "    BINARY_BUCKET_NAME: ${BINARY_BUCKET_NAME}\n"
+echo "    AWS_REGION: ${AWS_REGION}\n"
+echo "    AWS_PROFILE: ${AWS_PROFILE}\n"
 
 
 # POSITIONAL_ARGS=()
