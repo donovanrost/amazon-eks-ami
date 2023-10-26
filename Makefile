@@ -71,7 +71,7 @@ ifdef aws_profile
 endif
 
 ifdef binary_bucket_name
-	BINARY_BUCKET_NAME="BINARY_BUCKET_NAME\=$(binary_bucket_name);"
+	BINARY_BUCKET_NAME="BINARY_BUCKET_NAME=$(binary_bucket_name)"
 endif
 
 ifdef binary_bucket_region
