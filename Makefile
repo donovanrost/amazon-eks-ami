@@ -166,7 +166,7 @@ k8s: validate ## Build default K8s version of EKS Optimized AL2 AMI
 
 .PHONY: 1.28
 1.28: ## Build EKS Optimized AL2 AMI - K8s 1.28
-	$(MAKE) k8s $(shell hack/latest-binaries.sh 1.28)
+	$(MAKE) k8s $(shell AWS_PROFILE=central BINARY_BUCKET_NAME=amazon-eks-binaries AWS_REGION=us-gov-west-1 hack/latest-binaries.sh 1.28)
 
 .PHONY: lint-docs
 lint-docs: ## Lint the docs
