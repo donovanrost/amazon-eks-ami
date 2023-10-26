@@ -66,17 +66,20 @@ endif
 
 
 
-ifdef aws_profile
-	AWS_PROFILE="AWS_PROFILE=$(aws_profile)"
-endif
+# ifdef aws_profile
+# 	AWS_PROFILE="AWS_PROFILE=$(aws_profile)"
+# endif
 
-ifdef binary_bucket_name
-	BINARY_BUCKET_NAME="BINARY_BUCKET_NAME=$(binary_bucket_name)"
-endif
+# ifdef binary_bucket_name
+# 	BINARY_BUCKET_NAME="BINARY_BUCKET_NAME=$(binary_bucket_name)"
+# endif
 
-ifdef binary_bucket_region
-	AWS_REGION="AWS_REGION=$(binary_bucket_region)"
-endif
+# ifdef binary_bucket_region
+# 	AWS_REGION="AWS_REGION=$(binary_bucket_region)"
+# endif
+export aws_profile
+export binary_bucket_region
+export binary_bucket_name
 
 T_RED := \e[0;31m
 T_GREEN := \e[0;32m
@@ -166,7 +169,7 @@ k8s: validate ## Build default K8s version of EKS Optimized AL2 AMI
 
 .PHONY: 1.28
 1.28: ## Build EKS Optimized AL2 AMI - K8s 1.28
-	$(MAKE) k8s $(shell AWS_PROFILE=$(aws_profile); eval $(BINARY_BUCKET_NAME); eval $(AWS_REGION) hack/latest-binaries.sh 1.28)
+	$(MAKE) k8s $(shell hack/latest-binaries.sh 1.28)
 
 .PHONY: lint-docs
 lint-docs: ## Lint the docs

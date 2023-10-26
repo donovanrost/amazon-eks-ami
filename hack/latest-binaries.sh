@@ -10,9 +10,9 @@ AWS_REGION=${AWS_REGION:-"us-west-1"}
 
 echo "using:\n"
 echo "    SHELL: $(which $SHELL)\n"
-echo "    BINARY_BUCKET_NAME: ${BINARY_BUCKET_NAME}\n"
-echo "    AWS_REGION: ${AWS_REGION}\n"
-echo "    AWS_PROFILE: ${AWS_PROFILE}\n"
+echo "    BINARY_BUCKET_NAME: ${binary_bucket_region}\n"
+echo "    AWS_REGION: ${binary_bucket_region}\n"
+echo "    AWS_PROFILE: ${aws_profile}\n"
 
 
 # POSITIONAL_ARGS=()
