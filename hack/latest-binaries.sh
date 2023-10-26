@@ -9,7 +9,7 @@ BINARY_BUCKET_NAME=${BINARY_BUCKET_NAME:-"amazon-eks"}
 AWS_REGION=${AWS_REGION:-"us-west-1"}
 
 echo "using:\n"
-echo "    SHELL: $(which "$SHELL")\n"
+echo "    SHELL: $(which $SHELL)\n"
 echo "    BINARY_BUCKET_NAME: ${BINARY_BUCKET_NAME}\n"
 echo "    AWS_REGION: ${AWS_REGION}\n"
 echo "    AWS_PROFILE: ${AWS_PROFILE}\n"
