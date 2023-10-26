@@ -67,15 +67,15 @@ endif
 
 
 ifdef aws_profile
-	AWS_PROFILE="AWS_PROFILE\=$(aws_profile)"
+	AWS_PROFILE="AWS_PROFILE\=$(aws_profile);"
 endif
 
 ifdef binary_bucket_name
-	BINARY_BUCKET_NAME="BINARY_BUCKET_NAME\=$(binary_bucket_name)"
+	BINARY_BUCKET_NAME="BINARY_BUCKET_NAME\=$(binary_bucket_name);"
 endif
 
 ifdef binary_bucket_region
-	AWS_REGION="AWS_REGION\=$(binary_bucket_region)"
+	AWS_REGION="AWS_REGION\=$(binary_bucket_region);"
 endif
 
 T_RED := \e[0;31m
