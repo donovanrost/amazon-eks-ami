@@ -52,6 +52,19 @@ ifdef binary_bucket_region
 	REGION_FLAG := --region $(binary_bucket_region)
 endif
 
+# The following _FLAG vars are to be passed into hack/latest-binaries.sh 
+ifdef aws_profile
+	PROFILE_FLAG := --profile $(aws_profile)
+endif
+
+ifdef binary_bucket_name
+	BUCKET_FLAG := --bucket $(binary_bucket_name)
+endif
+
+ifdef binary_bucket_region
+	REGION_FLAG := --region $(binary_bucket_region)
+endif
+
 T_RED := \e[0;31m
 T_GREEN := \e[0;32m
 T_YELLOW := \e[0;33m
