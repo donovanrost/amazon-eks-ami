@@ -87,12 +87,6 @@ if yum list installed | grep ec2-net-utils; then sudo yum remove ec2-net-utils -
 sudo mkdir -p /etc/eks/
 
 ################################################################################
-### Time #######################################################################
-################################################################################
-
-sudo mv $WORKING_DIR/configure-clocksource.service /etc/eks/configure-clocksource.service
-
-################################################################################
 ### SSH ########################################################################
 ################################################################################
 
@@ -111,7 +105,7 @@ sudo mv $WORKING_DIR/iptables-restore.service /etc/eks/iptables-restore.service
 ################################################################################
 
 ### isolated regions can't communicate to awscli.amazonaws.com so installing awscli through yum
-ISOLATED_REGIONS="${ISOLATED_REGIONS:-us-iso-east-1 us-iso-west-1 us-isob-east-1 eu-isoe-west-1}"
+ISOLATED_REGIONS="${ISOLATED_REGIONS:-us-iso-east-1 us-iso-west-1 us-isob-east-1 eu-isoe-west-1 us-isof-south-1}"
 if ! [[ ${ISOLATED_REGIONS} =~ $BINARY_BUCKET_REGION ]]; then
   # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
   echo "Installing awscli v2 bundle"
@@ -135,6 +129,16 @@ fi
 ################################################################################
 
 sudo mv "${WORKING_DIR}/runtime.slice" /etc/systemd/system/runtime.slice
+# this unit is safe to have regardless of variant because it will not run if
+# the required binaries are not present.
+sudo mv $WORKING_DIR/set-nvidia-clocks.service /etc/systemd/system/set-nvidia-clocks.service
+sudo systemctl enable set-nvidia-clocks.service
+
+# backporting removal of default dummy0 network interface in systemd v236
+# https://github.com/systemd/systemd/blob/16ac586e5a77942bf1147bc9eae684d544ded88f/NEWS#L11139-L11144
+cat << EOF | sudo tee /lib/modprobe.d/10-no-dummies.conf
+options dummy numdummies=0
+EOF
 
 ###############################################################################
 ### Containerd setup ##########################################################
@@ -265,6 +269,8 @@ elif [ "$BINARY_BUCKET_REGION" = "us-isob-east-1" ]; then
   S3_DOMAIN="sc2s.sgov.gov"
 elif [ "$BINARY_BUCKET_REGION" = "eu-isoe-west-1" ]; then
   S3_DOMAIN="cloud.adc-e.uk"
+elif [ "$BINARY_BUCKET_REGION" = "us-isof-south-1" ]; then
+  S3_DOMAIN="csp.hci.ic.gov"
 fi
 S3_URL_BASE="https://$BINARY_BUCKET_NAME.s3.$BINARY_BUCKET_REGION.$S3_DOMAIN/$KUBERNETES_VERSION/$KUBERNETES_BUILD_DATE/bin/linux/$ARCH"
 S3_PATH="s3://$BINARY_BUCKET_NAME/$KUBERNETES_VERSION/$KUBERNETES_BUILD_DATE/bin/linux/$ARCH"
@@ -379,6 +385,11 @@ fi
 sudo chmod +x $ECR_CREDENTIAL_PROVIDER_BINARY
 sudo mkdir -p /etc/eks/image-credential-provider
 sudo mv $ECR_CREDENTIAL_PROVIDER_BINARY /etc/eks/image-credential-provider/
+# ecr-credential-provider has support for public.ecr.aws in 1.27+
+if vercmp "${KUBERNETES_VERSION}" gteq "1.27.0"; then
+  ECR_CRED_PROVIDER_CONFIG_WITH_PUBLIC=$(cat $WORKING_DIR/ecr-credential-provider-config.json | jq '.providers[0].matchImages += ["public.ecr.aws"]')
+  echo "${ECR_CRED_PROVIDER_CONFIG_WITH_PUBLIC}" > $WORKING_DIR/ecr-credential-provider-config.json
+fi
 sudo mv $WORKING_DIR/ecr-credential-provider-config.json /etc/eks/image-credential-provider/config.json
 
 ################################################################################

@@ -7,7 +7,8 @@ address = '/run/foo/foo.sock'
 
 [plugins]
 [plugins.'io.containerd.grpc.v1.cri']
-sandbox_image = '602401143452.dkr.ecr.us-west-2.amazonaws.com/eks/pause:3.5'
+enable_cdi = true
+sandbox_image = 'localhost/kubernetes/pause'
 
 [plugins.'io.containerd.grpc.v1.cri'.cni]
 bin_dir = '/opt/cni/bin'
@@ -23,6 +24,7 @@ base_runtime_spec = '/etc/containerd/base-runtime-spec.json'
 runtime_type = 'io.containerd.runc.v2'
 
 [plugins.'io.containerd.grpc.v1.cri'.containerd.runtimes.runc.options]
+BinaryName = '/usr/sbin/runc'
 SystemdCgroup = true
 
 [plugins.'io.containerd.grpc.v1.cri'.registry]

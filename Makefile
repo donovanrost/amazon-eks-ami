@@ -30,6 +30,12 @@ ifeq ($(enable_fips), true)
 	AMI_VARIANT := $(AMI_VARIANT)-fips
 endif
 
+ifeq ($(os_distro), al2023)
+	ifdef enable_accelerator
+		AMI_VARIANT := $(AMI_VARIANT)-$(enable_accelerator)
+	endif
+endif
+
 ami_name ?= $(AMI_VARIANT)-node-$(K8S_VERSION_MINOR)-$(AMI_VERSION)
 
 # ami owner overrides for cn/gov-cloud
@@ -77,6 +83,19 @@ k8s=1.28
 build: ## Build EKS Optimized AL2 AMI
 	$(MAKE) k8s $(shell hack/latest-binaries.sh $(k8s) $(PROFILE_FLAG) $(BUCKET_FLAG) $(REGION_FLAG))
 
+# ensure that these flags are equivalent to the rules in the .editorconfig
+SHFMT_FLAGS := --list \
+--language-dialect auto \
+--indent 2 \
+--binary-next-line \
+--case-indent \
+--space-redirects
+
+SHFMT_COMMAND := $(shell which shfmt)
+ifeq (, $(SHFMT_COMMAND))
+	SHFMT_COMMAND = docker run --rm -v $(MAKEFILE_DIR):$(MAKEFILE_DIR) mvdan/shfmt
+endif
+
 .PHONY: fmt
 fmt: ## Format the source files
 	hack/shfmt --write
@@ -122,7 +141,7 @@ validate: ## Validate packer config
 
 .PHONY: k8s
 k8s: validate ## Build default K8s version of EKS Optimized AMI
-	@echo "Building AMI [os_distro=$(os_distro) kubernetes_version=$(kubernetes_version) arch=$(arch)]"
+	@echo "Building AMI [os_distro=$(os_distro) kubernetes_version=$(kubernetes_version) arch=$(arch) $(if $(enable_accelerator),enable_accelerator=$(enable_accelerator))]"
 	$(PACKER_BINARY) build -timestamp-ui -color=false $(PACKER_ARGS) $(PACKER_TEMPLATE_FILE)
 
 # DEPRECATION NOTICE: `make` targets for each Kubernetes minor version will not be added after 1.28

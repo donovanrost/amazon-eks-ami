@@ -1,4 +1,6 @@
 # Amazon EKS AMI Build Specification
+> [!IMPORTANT]
+> Amazon EKS will no longer publish EKS-optimized Amazon Linux 2 (AL2) AMIs after November 26th, 2025. Additionally, Kubernetes version 1.32 is the last version for which Amazon EKS will release AL2 AMIs. From version 1.33 onwards, Amazon EKS will continue to release AL2023 and Bottlerocket based AMIs. To learn more, see [Guide to EKS AL2 & AL2-Accelerated AMIs transition features](https://docs.aws.amazon.com/eks/latest/userguide/eks-ami-deprecation-faqs.html).
 
 This repository contains resources and configuration scripts for building a
 custom Amazon EKS AMI with [HashiCorp Packer](https://www.packer.io/). This is
@@ -46,7 +48,7 @@ make k8s=1.29 os_distro=al2023
 make help
 ```
 
-The Makefile chooses a particular kubelet binary to use per Kubernetes version which you can [view here](Makefile).
+The Makefile chooses a particular kubelet binary to use per Kubernetes version which you can [view here](https://github.com/awslabs/amazon-eks-ami/blob/main/Makefile).
 
 > **Note**
 > The default instance type to build this AMI does not qualify for the AWS free tier.
@@ -54,8 +56,22 @@ The Makefile chooses a particular kubelet binary to use per Kubernetes version w
 
 ## 🔒 Security
 
-For security issues or concerns, please do not open an issue or pull request on GitHub. Please report any suspected or confirmed security issues to AWS Security https://aws.amazon.com/security/vulnerability-reporting/
+For security issues or concerns, please do not open an issue or pull request on GitHub. Please report any suspected or confirmed security issues to [AWS Security](https://aws.amazon.com/security/vulnerability-reporting/).
 
 ## ⚖️ License Summary
 
-This sample code is made available under a modified MIT license. See the LICENSE file.
+This sample code is made available under a MIT-0 license. See the LICENSE file.
+
+Although this repository is released under the MIT license, when using NVIDIA accelerated AMIs you agree to the NVIDIA Cloud End User License Agreement: https://s3.amazonaws.com/EULA/NVidiaEULAforAWS.pdf.
+
+Although this repository is released under the MIT license, NVIDIA accelerated AMIs
+use the third party [open-gpu-kernel-modules](https://github.com/NVIDIA/open-gpu-kernel-modules). The open-gpu-kernel-modules project's licensing includes the dual MIT/GPLv2 license.
+
+Although this repository is released under the MIT license, NVIDIA accelerated AMIs
+use the third party [nvidia-container-toolkit](https://github.com/NVIDIA/nvidia-container-toolkit). The nvidia-container-toolkit project's licensing includes the Apache-2.0 license.
+
+Although this repository is released under the MIT license, Neuron accelerated AMIs
+use the third party [Neuron Driver](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/release-notes/runtime/aws-neuronx-dkms/index.html). The Neuron Driver project's licensing includes the GPLv2 license.
+
+Although this repository is released under the MIT license, accelerated AMIs
+use the third party [Elastic Fabric Adapter Driver](https://github.com/amzn/amzn-drivers/tree/master/kernel/linux/efa). The Elastic Fabric Adapter Driver project's licensing includes the GPLv2 license.

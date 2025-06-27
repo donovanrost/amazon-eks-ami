@@ -63,7 +63,8 @@ sudo dnf install -y \
   unzip \
   wget \
   mdadm \
-  pigz
+  pigz \
+  python3-dnf-plugin-versionlock
 
 ################################################################################
 ### Networking #################################################################
@@ -71,6 +72,9 @@ sudo dnf install -y \
 
 # needed by kubelet
 sudo dnf install -y iptables-nft
+
+# updating this package may trigger post-install hooks or config changes that undo what happens below
+sudo dnf versionlock amazon-ec2-net-utils
 
 # Mask udev triggers installed by amazon-ec2-net-utils package
 sudo touch /etc/udev/rules.d/99-vpc-policy-routes.rules
@@ -85,14 +89,14 @@ ManageForeignRoutingPolicyRules=no
 EOF
 
 # Temporary fix for https://github.com/aws/amazon-vpc-cni-k8s/pull/2118
-sudo sed -i "s/^MACAddressPolicy=.*/MACAddressPolicy=none/" /usr/lib/systemd/network/99-default.link || true
-
-################################################################################
-### Time #######################################################################
-################################################################################
-
-sudo cp -v $WORKING_DIR/shared/configure-clocksource.service /etc/systemd/system/configure-clocksource.service
-sudo systemctl enable configure-clocksource
+sudo mkdir -p /etc/systemd/network/99-default.link.d/
+cat << EOF | sudo tee /etc/systemd/network/99-default.link.d/99-no-policy.conf
+# Ensure MACAddressPolicy=none, reinstalling systemd-udev writes /usr/lib/systemd/network/99-default.link
+# with value set to persistent
+# https://github.com/aws/amazon-vpc-cni-k8s/issues/2103#issuecomment-1321698870
+[Link]
+MACAddressPolicy=none
+EOF
 
 ################################################################################
 ### SSH ########################################################################
@@ -107,7 +111,7 @@ sudo systemctl restart sshd.service
 ################################################################################
 
 ### isolated regions can't communicate to awscli.amazonaws.com so installing awscli through dnf
-ISOLATED_REGIONS="${ISOLATED_REGIONS:-us-iso-east-1 us-iso-west-1 us-isob-east-1 eu-isoe-west-1}"
+ISOLATED_REGIONS="${ISOLATED_REGIONS:-us-iso-east-1 us-iso-west-1 us-isob-east-1 eu-isoe-west-1 us-isof-south-1}"
 if ! [[ ${ISOLATED_REGIONS} =~ $BINARY_BUCKET_REGION ]]; then
   # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
   echo "Installing awscli v2 bundle"
@@ -132,6 +136,8 @@ fi
 
 sudo dnf install -y runc-${RUNC_VERSION}
 sudo dnf install -y containerd-${CONTAINERD_VERSION}
+
+sudo systemctl enable ebs-initialize-bin@containerd
 
 ###############################################################################
 ### Nerdctl setup #############################################################
@@ -161,6 +167,8 @@ elif [ "$BINARY_BUCKET_REGION" = "us-isob-east-1" ]; then
   S3_DOMAIN="sc2s.sgov.gov"
 elif [ "$BINARY_BUCKET_REGION" = "eu-isoe-west-1" ]; then
   S3_DOMAIN="cloud.adc-e.uk"
+elif [ "$BINARY_BUCKET_REGION" = "us-isof-south-1" ]; then
+  S3_DOMAIN="csp.hci.ic.gov"
 fi
 S3_URL_BASE="https://$BINARY_BUCKET_NAME.s3.$BINARY_BUCKET_REGION.$S3_DOMAIN/$KUBERNETES_VERSION/$KUBERNETES_BUILD_DATE/bin/linux/$ARCH"
 S3_PATH="s3://$BINARY_BUCKET_NAME/$KUBERNETES_VERSION/$KUBERNETES_BUILD_DATE/bin/linux/$ARCH"
@@ -180,10 +188,16 @@ for binary in ${BINARIES[*]}; do
   fi
   sudo sha256sum -c $binary.sha256
   sudo chmod +x $binary
+  sudo chown root:root $binary
   sudo mv $binary /usr/bin/
 done
 
 sudo rm ./*.sha256
+
+kubelet --version > "${WORKING_DIR}/kubelet-version.txt"
+sudo mv "${WORKING_DIR}/kubelet-version.txt" /etc/eks/kubelet-version.txt
+
+sudo systemctl enable ebs-initialize-bin@kubelet
 
 ################################################################################
 ### ECR Credential Provider Binary #############################################

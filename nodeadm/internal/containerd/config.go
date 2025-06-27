@@ -9,6 +9,7 @@ import (
 	"github.com/awslabs/amazon-eks-ami/nodeadm/internal/util"
 	"github.com/pelletier/go-toml/v2"
 	"go.uber.org/zap"
+	"golang.org/x/mod/semver"
 )
 
 const ContainerRuntimeEndpoint = "unix:///run/containerd/containerd.sock"
@@ -25,18 +26,18 @@ var (
 )
 
 type containerdTemplateVars struct {
-	SandboxImage string
+	EnableCDI         bool
+	SandboxImage      string
+	RuntimeName       string
+	RuntimeBinaryName string
 }
 
 func writeContainerdConfig(cfg *api.NodeConfig) error {
-	if err := writeBaseRuntimeSpec(cfg); err != nil {
-		return err
-	}
-
 	containerdConfig, err := generateContainerdConfig(cfg)
 	if err != nil {
 		return err
 	}
+
 	// because the logic in containerd's import merge decides to completely
 	// overwrite entire sections, we want to implement this merging ourselves.
 	// see: https://github.com/containerd/containerd/blob/a91b05d99ceac46329be06eb43f7ae10b89aad45/cmd/containerd/server/config/config.go#L407-L431
@@ -56,8 +57,13 @@ func writeContainerdConfig(cfg *api.NodeConfig) error {
 }
 
 func generateContainerdConfig(cfg *api.NodeConfig) ([]byte, error) {
+	runtimeOptions := getRuntimeOptions(cfg)
+
 	configVars := containerdTemplateVars{
-		SandboxImage: cfg.Status.Defaults.SandboxImage,
+		SandboxImage:      cfg.Status.Defaults.SandboxImage,
+		RuntimeBinaryName: runtimeOptions.RuntimeBinaryPath,
+		RuntimeName:       runtimeOptions.RuntimeName,
+		EnableCDI:         semver.Compare(cfg.Status.KubeletVersion, "v1.32.0") >= 0,
 	}
 	var buf bytes.Buffer
 	if err := containerdConfigTemplate.Execute(&buf, configVars); err != nil {

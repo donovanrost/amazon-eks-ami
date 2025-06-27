@@ -68,6 +68,8 @@ test: crds generate fmt vet ## Run go test against code.
 	go test ./...
 
 .PHONY: test-e2e
+# the test infra container needs a linux executable
+test-e2e: GOOS=linux
 test-e2e: build ## Run e2e tests.
 	test/e2e/run.sh
 
@@ -75,11 +77,15 @@ test-e2e: build ## Run e2e tests.
 
 .PHONY: build
 build: ## Build binary.
-	go build -o $(LOCALBIN)/nodeadm cmd/nodeadm/main.go
+	GOOS=$(GOOS) go build -o $(LOCALBIN)/nodeadm cmd/nodeadm/main.go
 
 .PHONY: run
-run: build ## Run binary
+run: build ## Run binary.
 	go run cmd/nodeadm/main.go $(args)
+
+.PHONY: wasm
+wasm: ## Build WASM binary.
+	GOOS=js GOARCH=wasm go build -o $(LOCALBIN)/nodeadm.wasm cmd/nodeadm-wasm/main.go
 
 ##@ Build Dependencies
 
@@ -96,7 +102,7 @@ CRD_REF_DOCS ?= $(LOCALBIN)/crd-ref-docs
 ## Tool Versions
 CONTROLLER_TOOLS_VERSION ?= v0.14.0
 CODE_GENERATOR_VERSION ?= v0.28.1
-CRD_REF_DOCS_VERSION ?= cf959ab94ea543cb8efd25dc35081880b7ca6a81
+CRD_REF_DOCS_VERSION ?= v0.1.0
 
 tools: controller-gen conversion-gen crd-ref-docs ## Install the toolchain.
 

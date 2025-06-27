@@ -12,6 +12,9 @@ else
     ap-east-1)
       acct="800184023465"
       ;;
+    ap-east-2)
+      acct="533267051163"
+      ;;
     me-south-1)
       acct="558608220178"
       ;;
@@ -38,6 +41,9 @@ else
       ;;
     eu-isoe-west-1)
       acct="249663109785"
+      ;;
+    us-isof-south-1)
+      acct="676585237158"
       ;;
     af-south-1)
       acct="877085696533"
@@ -71,6 +77,15 @@ else
       ;;
     ap-southeast-5)
       acct="151610086707"
+      ;;
+    ap-southeast-6)
+      acct="333609536671"
+      ;;
+    ap-southeast-7)
+      acct="121268973566"
+      ;;
+    mx-central-1)
+      acct="730335286997"
       ;;
     # This sections includes all commercial non-opt-in regions, which use
     # the same account for ECR pause container images, but still have in-region
@@ -115,6 +130,10 @@ else
     eu-isoe-*)
       acct="249663109785"
       region="eu-isoe-west-1"
+      ;;
+    us-isof-*)
+      acct="676585237158"
+      region="us-isof-south-1"
       ;;
     *)
       acct="602401143452"
